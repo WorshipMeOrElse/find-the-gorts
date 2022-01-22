@@ -29,11 +29,9 @@ local damage_event = game:GetService('ReplicatedStorage'):WaitForChild('DamageEv
 character:WaitForChild("Humanoid").Touched:Connect(function(tP)
 	if tP.Name=='LightingChanger' and tP:FindFirstChild'Configuration' then
 		SetLighting(require(tP.Configuration))
-	elseif tP:FindFirstChild("kills") then
-		damage_event:FireServer('Normal')
-	elseif tP:FindFirstChild("ouch") then
-		damage_event:FireServer('HighDamage')
-	elseif tP:FindFirstChild("instakills") then
-		damage_event:FireServer('Instakill')
-	end
+	else
+		local damage = (tP:FindFirstChild("kills") and 'Normal') or (tP:FindFirstChild('ouch') and 'HighDamage') or (tP:FindFirstChild('instakills') and 'Instakill') or nil
+		if not damage then return end
+		damage_event:FireServer(damage)
+ 	end	
 end)
