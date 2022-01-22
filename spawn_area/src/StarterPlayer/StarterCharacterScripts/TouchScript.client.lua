@@ -15,8 +15,6 @@ local function SetLighting(c,ltype)
 	for l, p in pairs(c) do
 		if lighting_table[l] then continue end
 		lighting_table[l] = thing_to_edit[l]
-
-		if not (type(p)=='string' or type(p)=='boolean') then continue end
 		thing_to_edit[l] = p
 	end
 
