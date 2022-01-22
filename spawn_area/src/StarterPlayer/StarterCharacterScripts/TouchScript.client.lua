@@ -7,16 +7,18 @@ local function SetLighting(c,ltype)
 	if not c then return end
 	c = (c=='Default' and origlighting) or c
 
-	local thing_to_edit = ((ltype=='ColorCorrection' and lighting:FindFirstChild('ColorCorrection')) and lighting.ColorCorrection) or lighting
+	local is_color_correction = (ltype=='ColorCorrection' and lighting:FindFirstChild('ColorCorrection'))
+	local thing_to_edit = (is_color_correction and lighting.ColorCorrection) or lighting
+	local lighting_table = (is_color_correction and origcclighting) or origlighting
 
 	tween_service:Create(thing_to_edit, TweenInfo.new(3), c):Play()
-		for l, p in pairs(c) do
-			if origlighting[l] then continue end
-			origlighting[l] = thing_to_edit[l]
+	for l, p in pairs(c) do
+		if lighting_table[l] then continue end
+		lighting_table[l] = thing_to_edit[l]
 
-			if not (type(p)=='string' or type(p)=='boolean') then continue end
-			thing_to_edit[l] = p
-		end
+		if not (type(p)=='string' or type(p)=='boolean') then continue end
+		thing_to_edit[l] = p
+	end
 
 	task.wait(2)
 end
