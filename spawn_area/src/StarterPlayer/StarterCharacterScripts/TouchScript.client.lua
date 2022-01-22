@@ -23,10 +23,9 @@ local function SetLighting(c,ltype)
 	task.wait(2)
 end
 
-local character = script.Parent
 local damage_event = game:GetService('ReplicatedStorage'):WaitForChild('DamageEvent')
 
-character:WaitForChild("Humanoid").Touched:Connect(function(tP)
+script.Parent:WaitForChild("Humanoid").Touched:Connect(function(tP)
 	if tP.Name=='LightingChanger' and tP:FindFirstChild'Configuration' then
 		SetLighting(require(tP.Configuration))
 	else
