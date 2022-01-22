@@ -1,34 +1,52 @@
-function getPlatformColor(pl)
-	if pl:FindFirstChild"ColorOverride" and pl.ColorOverride:IsA"Color3Value" then
-		return pl.ColorOverride.Value
+local tween_service = game:GetService("TweenService")
+local lighting = game:GetService('Lighting')
+local origlighting={}
+local origcclighting={}
+
+local function SetLighting(c,ltype)
+	if not c then return end
+	c = (c=='Default' and origlighting) or c
+
+	if ltype=='ColorCorrection' and lighting:FindFirstChild('ColorCorrection') then
+		for l, _ in pairs(c) do
+			if origcclighting[l] then continue end
+			origcclighting[l]=lighting.ColorCorrection[l]
+		end
+
+		tween_service:Create(lighting.ColorCorrection, TweenInfo.new(3), c):Play()
+
+		for l,p in pairs(c) do
+			if not (type(p)=='string' or type(p)=='boolean') then continue end
+			lighting.ColorCorrection[l]=p
+		end
 	else
-		return pl.Color
+		for l, _ in pairs(c) do
+			if origlighting[l] then continue end
+			origlighting[l]=lighting[l]
+		end
+
+		tween_service:Create(lighting, TweenInfo.new(3), c):Play()
+
+		for l,p in pairs(c) do
+			if not (type(p)=='string' or type(p)=='boolean') then continue end
+			lighting[l]=p
+		end
 	end
+
+	task.wait(2)
 end
-local p = game.Players:GetPlayerFromCharacter(script.Parent)
-script.Parent:WaitForChild("Humanoid").Touched:connect(function(tP,hP)
-	if tP.Name=='LightingChanger' and tP:IsA'BasePart' and tP:FindFirstChild'Configuration' then
-		local c=require(tP.Configuration)
-		if _G.SetLighting then
-			_G:SetLighting(c)
-		end
-	end
-	if tP:FindFirstChild("kills") then
-		if (tP.Name=='ButtonActivatedPlatform' or tP.Parent.Parent.Name=="Beat Blocks") and tP.CanCollide==false then return end
-		if script.Parent.Humanoid.Health > 0 and hP.Name ~= "Part" then
-			game.ReplicatedStorage.DamageEvent:FireServer('Normal')
-		end
-	end
-	if tP:FindFirstChild("ouch") then
-		if (tP.Name=='ButtonActivatedPlatform' or tP.Parent.Parent.Name=="Beat Blocks") and tP.CanCollide==false then return end
-		if script.Parent.Humanoid.Health > 0 and hP.Name ~= "Part" then
-			game.ReplicatedStorage.DamageEvent:FireServer('HighDamage')
-		end
-	end
-	if tP:FindFirstChild("instakills") then
-		if (tP.Name=='ButtonActivatedPlatform' or tP.Parent.Parent.Name=="Beat Blocks") and tP.CanCollide==false then return end
-		if script.Parent.Humanoid.Health > 0 and hP.Name ~= "Part" then
-			game.ReplicatedStorage.DamageEvent:FireServer('Instakill')
-		end
+
+local character = script.Parent
+local damage_event = game:GetService('ReplicatedStorage')
+
+character:WaitForChild("Humanoid").Touched:Connect(function(tP,hP)
+	if tP.Name=='LightingChanger' and tP:FindFirstChild'Configuration' then
+		SetLighting(require(tP.Configuration))
+	elseif tP:FindFirstChild("kills") then
+		damage_event:FireServer('Normal')
+	elseif tP:FindFirstChild("ouch") then
+		damage_event:FireServer('HighDamage')
+	elseif tP:FindFirstChild("instakills") then
+		damage_event:FireServer('Instakill')
 	end
 end)

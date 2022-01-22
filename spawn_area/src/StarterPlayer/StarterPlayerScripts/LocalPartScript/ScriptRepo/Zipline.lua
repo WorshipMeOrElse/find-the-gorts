@@ -8,10 +8,12 @@ function tween(part,time,inf)
 	local tw=ts:Create(part,tweeninf,inf)
 	tw:Play()
 end
-local PV=script.Parent:FindFirstChild'PropelVelocity' and script.Parent.PropelVelocity.Value or 0
+
+local PV=script.Parent:FindFirstChild('PropelVelocity') and script.Parent.PropelVelocity.Value or 0
 local EPC=script.Parent.PC
 local userinput=game:GetService('UserInputService')
 local NOJUMPALLOWED=script.Parent:FindFirstChild'CannotDismount' and script.Parent.CannotDismount.Value
+
 return function()
 	local Riding = false
 	local DecoRope = Instance.new("RopeConstraint")
