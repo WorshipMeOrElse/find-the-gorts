@@ -1,48 +1,4 @@
 --all of the code below here is no longer used in new buttons but there for compatibility's sake
-function GetAllButtons(color)
-	local buttont={}
-	for _,b in pairs(workspace:GetDescendants()) do
-		if b.Name=='Button' and b:FindFirstChild'ClientObject' and b:FindFirstChild'Pressed' then
-			local doinsert
-			if color then
-				for _,d in pairs(b:GetDescendants()) do
-					if d:IsA'BasePart' and d.Color==color then
-						doinsert=true
-					end
-				end
-			else
-				doinsert=true
-			end
-			if doinsert then 
-				table.insert(buttont, #buttont+1, b) 
-			end
-		end
-	end
-	return buttont
-end
-
-local mt={}
-mt.__index=function(_,i)
-	if i=='All' then
-		return GetAllButtons()
-	end
-	return GetAllButtons(i)
-end
-mt.__newindex=function()
-	
-end
-mt.__call=function(_,mode,val,color)
-	if mode=='Get' then
-		return GetAllButtons()
-	elseif mode=='SetAll' then
-		for _,b in pairs(GetAllButtons(color)) do
-			b.Pressed.Value=val
-		end
-	end
-end
-
-_G.Buttons=setmetatable({},mt)
-
 local phs = game:GetService('PhysicsService')
 local lighting = game:GetService('Lighting')
 local origlighting={}
@@ -103,14 +59,18 @@ local addPart = function(v)
 		v.Parent:Destroy()
 		addChildren(v,c)
 		ApplyPart(c)
-		for _,w in pairs(c:GetDescendants()) do
+		for _,w in ipairs(c:GetDescendants()) do
 			ApplyPart(w)
 		end
 		v:Destroy()
 	end
 end
 
-function initplr(p)
+for _,d in ipairs(workspace:GetDescendants()) do
+	addPart(d)
+end
+
+local function initplr(p)
 	local function initchar(c)
 		if not c then return end
 		for _,v in pairs(c:GetChildren()) do
@@ -153,6 +113,3 @@ end
 p.CharacterAdded:Connect(initchar)
 initchar(p.Character)
 
-for _,d in pairs(workspace:GetDescendants()) do
-	addPart(d)
-end

@@ -5,6 +5,7 @@ local pressedcf=unpressedcf*CFrame.new(0,-script.Parent.Size.Y*.75,0)
 local ts=game:GetService'TweenService'
 local invert=p:FindFirstChild'Invert' and p.Invert.Value
 local ch=0
+
 function tween(part,time,inf)
 	local tweeninf=TweenInfo.new(
 		time,
@@ -14,18 +15,26 @@ function tween(part,time,inf)
 	local tw=ts:Create(part,tweeninf,inf)
 	tw:Play()
 end
+
+local buttons = require(game:GetService('ReplicatedStorage'):WaitForChild('modules'):WaitForChild('buttons'))
+
 function update(v)
 	local truev=v
 	if invert then v=not v end
 	local invertedbutton
 	local pressedbutton
-	for n,b in pairs(_G.Buttons[script.Parent.Color]) do
+	for n,b in ipairs(buttons:GetButtons(script.Parent.Colors)) do
 		if n~='Active' then
 			local isinvert=b:FindFirstChild'Invert' and b.Invert.Value
 			local ispressed=b:FindFirstChild'Pressed' and b.Pressed.Value
-			if ispressed then pressedbutton=true end
-			if isinvert and ispressed then invertedbutton=true end
-			local invertfactor=isinvert and not ispressed
+
+			if ispressed then 
+				pressedbutton=true 
+			end
+
+			if isinvert and ispressed then 
+				invertedbutton=true 
+			end
 		end
 	end
 	if not invert and (pressedbutton and not truev) then return end

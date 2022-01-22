@@ -14,12 +14,15 @@ function tween(part,time,inf)
 	local tw=ts:Create(part,tweeninf,inf)
 	tw:Play()
 end
+
+local buttons = require(game:GetService('ReplicatedStorage'):WaitForChild('modules'):WaitForChild('buttons'))
+
 function update(v)
 	local truev=v
 	if invert then v=not v end
 	local invertedbutton
 	local pressedbutton
-	for n,b in pairs(_G.Buttons[script.Parent.Color]) do
+	for n,b in pairs(buttons:GetButtons(script.Parent.Color)) do
 		if n~='Active' then
 			local isinvert=b:FindFirstChild'Invert' and b.Invert.Value
 			local ispressed=b:FindFirstChild'Pressed' and b.Pressed.Value
