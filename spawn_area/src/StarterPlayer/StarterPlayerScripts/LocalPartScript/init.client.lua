@@ -3,7 +3,7 @@ local phs = game:GetService('PhysicsService')
 local lighting = game:GetService('Lighting')
 local origlighting={}
 
-function ApplyPart(w)
+local function ApplyPart(w)
 	if w.Name=='ChangeLighting' then
 		for p,l in ipairs(require(w)) do
 			if not origlighting[p] then
@@ -110,6 +110,6 @@ local function initchar(c)
 		end
 	end)
 end
+
 p.CharacterAdded:Connect(initchar)
 initchar(p.Character)
-
