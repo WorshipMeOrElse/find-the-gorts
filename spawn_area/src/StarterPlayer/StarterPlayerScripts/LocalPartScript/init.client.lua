@@ -1,6 +1,3 @@
-local phs = game:GetService('PhysicsService')
-local origlighting={}
-
 --all of the code below here is no longer used in new buttons but there for compatibility's sake
 function GetAllButtons(color)
 	local buttont={}
@@ -46,31 +43,35 @@ end
 
 _G.Buttons=setmetatable({},mt)
 
+local phs = game:GetService('PhysicsService')
+local lighting = game:GetService('Lighting')
+local origlighting={}
+
 function ApplyPart(w)
 	if w.Name=='ChangeLighting' then
-		for p,l in pairs(require(w)) do
+		for p,l in ipairs(require(w)) do
 			if not origlighting[p] then
-				origlighting[p]=game.Lighting[p]
+				origlighting[p]=lighting[p]
 			end
-			game.Lighting[p]=l
+
+			lighting[p]=l
 		end
-	end
-	if w.Name=='LightingChanger' and w:IsA'BasePart' then
+	elseif (w.Name=='LightingChanger') and w:IsA'BasePart' then
 		w.Transparency=1
-	end
-	if w:FindFirstChild'invisible' and w:IsA'BasePart' then
-		w.Transparency=1
-	end
-	if w.Name == "RunRepoScript" and w:IsA"StringValue" then
+	elseif w.Name == "RunRepoScript" and w:IsA"StringValue" then
 		local scr = script.ScriptRepo:FindFirstChild(w.Value)
-		if scr then
-			scr = scr:Clone()
-			scr.Name = "RepoScript"
-			scr.Parent = w.Parent
-			task.spawn(function()
-				require(scr)()
-			end)
+
+		if not scr then 
+			warn('error inside of '..w.Parent..': reposcript named '..w.Value..' not found!') 
+			return 
 		end
+
+		scr = scr:Clone()
+		scr.Name = "RepoScript"
+		scr.Parent = w.Parent
+		task.defer(function()
+			require(scr)()
+		end)
 	end
 	
 	if w.Name == "ClientObjectScript" then

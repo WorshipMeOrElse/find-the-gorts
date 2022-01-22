@@ -14,8 +14,9 @@ local sounds={
 	Pop='rbxassetid://11895500'
 }
 function Play(snd,par)
-	local s=Instance.new('Sound',par)
+	local s=Instance.new('Sound')
 	s.SoundId=sounds[snd] or ''
+	s.Parent = par
 	s:Play()
 	game.Debris:AddItem(s,10)
 	return s
@@ -30,12 +31,17 @@ return function()
 	local WaitTime=script.Parent:FindFirstChild'WaitTime' and script.Parent.WaitTime.Value or 5
 	local MaxHeight=script.Parent:FindFirstChild'MaxHeight' and script.Parent.MaxHeight.Value or 20
 	local Force=script.Parent:FindFirstChild'Force' and script.Parent.Force.Value or 5
-	if WaitTime<=0 then WaitTime=math.huge end
+
+	if WaitTime<=0 then 
+		WaitTime=math.huge 
+	end
+
 	local Riding = false
 	local val
 	if script.Parent.Name=='ButtonActivatedBalloonDispenser' then
-		val=Instance.new('BoolValue',script.Parent)
+		val=Instance.new('BoolValue')
 		val.Name='Activated'
+		val.Parent = script.Parent
 	end
 	for _,d in pairs(script.Parent:GetChildren()) do
 		if d:IsA'Decal' then
@@ -49,7 +55,6 @@ return function()
 				Riding = true
 				bdelay = true
 				local autodisconnect
-				local h=part.Parent.Humanoid
 				if not NOJUMPALLOWED then
 					userinput.JumpRequest:Connect(function()
 						autodisconnect=true
@@ -79,15 +84,18 @@ return function()
 				Balloon.Color=script.Parent.Color
 				Balloon.CustomPhysicalProperties = PhysicalProperties.new(20,0,0) 
 				Balloon.CFrame = script.Parent.CFrame
-				local BG=Instance.new('BodyGyro',Balloon)
+				local BG=Instance.new('BodyGyro')
 				BG.MaxTorque=Vector3.new(math.huge,math.huge,math.huge)
 				BG.CFrame=CFrame.new()
-				local BV=Instance.new('BodyVelocity',Balloon)
+				BG.Parent = Balloon
+				local BV=Instance.new('BodyVelocity')
 				BV.MaxForce=Vector3.new(0,10000000,0)
 				BV.Velocity=Vector3.new(0,Force,0)
-				local sm=Instance.new('SpecialMesh',Balloon)
+				BV.Parent = Balloon
+				local sm=Instance.new('SpecialMesh')
 				sm.MeshType='Sphere'
 				sm.Scale=Vector3.new()
+				sm.Parent = Balloon
 				A2.Parent = Balloon
 				P1.Parent = Balloon
 				P2.Parent = Bar
@@ -107,8 +115,15 @@ return function()
 				local StartTime=tick()
 				local sound=Play('Inflate',Balloon)
 				tween(sm,2,{Scale=Vector3.new(1,1.25,1)})
-				repeat wait() until (tick()-StartTime>WaitTime or Bar.Position.Y>pos+MaxHeight) or autodisconnect or part.Parent:WaitForChild("Humanoid").Health<=0
-				if sound then sound:Destroy() end
+
+				repeat 
+					task.wait() 
+				until (tick()-StartTime>WaitTime or Bar.Position.Y>pos+MaxHeight) or autodisconnect or part.Parent:WaitForChild("Humanoid").Health<=0
+
+				if sound then 
+					sound:Destroy() 
+				end
+
 				Play('Pop',Balloon)
 				BV:Destroy()
 				local cf=Balloon.CFrame
@@ -117,12 +132,17 @@ return function()
 				Weld:Destroy()
 				Balloon.Transparency=1
 				Riding=false
-				spawn(function() wait(0.5) bdelay = false end)
+
+				task.spawn(function() 
+					task.wait(0.5) 
+					bdelay = false 
+				end)
+
 				Bar.CanCollide=true
 				Balloon.CanCollide=true
-				delay(7,function()
+				task.delay(7,function()
 					tween(Bar,5,{Transparency=1})
-					wait(5)
+					task.wait(5)
 					Bar:Destroy()
 					Balloon:Destroy()
 				end)

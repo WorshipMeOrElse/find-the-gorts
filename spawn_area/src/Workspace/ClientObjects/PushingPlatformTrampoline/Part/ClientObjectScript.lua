@@ -22,6 +22,7 @@ local defaultforce=Vector3.new(0,0,1)*totalmass + Vector3.new(0,0,100)
 vf.Force=Vector3.new(0,0,-1)*totalmass
 
 return function()
+	local thing
 	thing=game["Run Service"].Stepped:Connect(function()
 		if not p or not p:FindFirstChild('PrismaticConstraint') then
 			thing:Disconnect()

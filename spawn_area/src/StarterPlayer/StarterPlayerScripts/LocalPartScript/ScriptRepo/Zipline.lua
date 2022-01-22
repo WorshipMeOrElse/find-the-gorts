@@ -1,14 +1,3 @@
-local ts=game:GetService'TweenService'
-function tween(part,time,inf)
-	local tweeninf=TweenInfo.new(
-		time,
-		Enum.EasingStyle.Linear,
-		Enum.EasingDirection.Out
-	)
-	local tw=ts:Create(part,tweeninf,inf)
-	tw:Play()
-end
-
 local PV=script.Parent:FindFirstChild('PropelVelocity') and script.Parent.PropelVelocity.Value or 0
 local EPC=script.Parent.PC
 local userinput=game:GetService('UserInputService')
@@ -30,8 +19,9 @@ return function()
 	DecoRope.Name = "DecoRope"
 	local val
 	if script.Parent:FindFirstChild("ButtonActivated") ~= nil then
-		val=Instance.new('BoolValue',script.Parent)
+		val=Instance.new('BoolValue')
 		val.Name='Activated'
+		val.Parent = script.Parent
 	end
 	script.Parent.Touched:Connect(function(part)
 		local plr = game.Players:GetPlayerFromCharacter(part.Parent)
@@ -40,7 +30,6 @@ return function()
 				Riding = true
 				EPC.Parent = nil
 				local autodisconnect
-				local h=part.Parent.Humanoid
 				if not NOJUMPALLOWED then
 					userinput.JumpRequest:Connect(function()
 						autodisconnect=true
@@ -97,8 +86,15 @@ return function()
 				Weld.Parent = RopeBar
 				RopeGuide.Parent = script.Parent.Parent
 				ZPAT:Play()
-				repeat wait() part.Parent:WaitForChild("Humanoid").PlatformStand = true until not part or not part.Parent or not script or not script.Parent or not PC or PC.CurrentPosition >= PC.UpperLimit or autodisconnect or part.Parent:WaitForChild("Humanoid").Health<=0
-				if PC then PC:Destroy() end
+				repeat 
+					task.wait() 
+					part.Parent:WaitForChild("Humanoid").PlatformStand = true 
+				until not part or not part.Parent or not script or not script.Parent or not PC or PC.CurrentPosition >= PC.UpperLimit or autodisconnect or part.Parent:WaitForChild("Humanoid").Health<=0
+
+				if PC then 
+					PC:Destroy() 
+				end
+				
 				Weld:Destroy()
 				Riding=false
 				RopeBar.CanCollide=false
