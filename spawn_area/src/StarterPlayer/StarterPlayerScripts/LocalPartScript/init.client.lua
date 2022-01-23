@@ -31,9 +31,11 @@ end
 
 for _,d in ipairs(workspace:GetDescendants()) do
 	if d.Name == "ClientObject" then
-		local parent = d.Parent
-		ApplyPart(parent)
-		for _,w in ipairs(parent:GetDescendants()) do
+		local clone = d.Parent:Clone()
+		clone.Parent = d.Parent
+		d.Parent:Destroy()
+		ApplyPart(clone)
+		for _,w in ipairs(clone:GetDescendants()) do
 			ApplyPart(w)
 		end
 		d:Destroy()
