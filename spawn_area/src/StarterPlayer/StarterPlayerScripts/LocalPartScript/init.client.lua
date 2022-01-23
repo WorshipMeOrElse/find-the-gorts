@@ -1,4 +1,3 @@
---all of the code below here is no longer used in new buttons but there for compatibility's sake
 local phs = game:GetService('PhysicsService')
 local lighting = game:GetService('Lighting')
 local origlighting={}
