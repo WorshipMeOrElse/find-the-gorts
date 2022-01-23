@@ -6,7 +6,7 @@ local clientobjectscript = workspace.ClientObjects.CustomClientObjects.studio_go
 local gort = script.Parent:WaitForChild('Studio Gort')
 gort.Parent = nil
 
-input.FocusLost:ConnectParallel(function()
+local check = function()
 	if string.gsub(input.Text, "%s+", "") ~= code then return end
 	
 	task.defer(function()
@@ -15,4 +15,7 @@ input.FocusLost:ConnectParallel(function()
 		script.Parent:Destroy()
 		return
 	end)
-end)
+end
+
+input.FocusLost:ConnectParallel(check)
+input.Parent.Parent.enter.Activated:Connect(check)
