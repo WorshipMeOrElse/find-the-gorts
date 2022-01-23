@@ -16,6 +16,7 @@ local function ApplyPart(w)
 		local scr = script.ScriptRepo[w.Value]
 
 		scr = scr:Clone()
+		scr.Name = 'RepoScript'
 		scr.Parent = w.Parent
 		task.defer(function()
 			require(scr)()
@@ -32,7 +33,7 @@ end
 for _,d in ipairs(workspace:GetDescendants()) do
 	if d.Name == "ClientObject" then
 		local clone = d.Parent:Clone()
-		clone.Parent = d.Parent
+		clone.Parent = d.Parent.Parent
 		d.Parent:Destroy()
 		ApplyPart(clone)
 		for _,w in ipairs(clone:GetDescendants()) do
