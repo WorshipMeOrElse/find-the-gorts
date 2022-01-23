@@ -4,40 +4,29 @@ local lighting = game:GetService('Lighting')
 local origlighting={}
 
 local function ApplyPart(w)
+	w.Transparency= ((w.Name=='LightingChanger') and w:IsA'BasePart') and 1 or 0
+	
 	if w.Name=='ChangeLighting' then
 		for p,l in ipairs(require(w)) do
-			if not origlighting[p] then
-				origlighting[p]=lighting[p]
-			end
-
 			lighting[p]=l
-		end
-	elseif (w.Name=='LightingChanger') and w:IsA'BasePart' then
-		w.Transparency=1
-	elseif w.Name == "RunRepoScript" and w:IsA"StringValue" then
-		local scr = script.ScriptRepo:FindFirstChild(w.Value)
 
-		if not scr then 
-			warn('error inside of '..w.Parent..': reposcript named '..w.Value..' not found!') 
-			return 
+			if origlighting[p] then continue end
+			origlighting[p]=lighting[p]
 		end
+	elseif w.Name == "RunRepoScript" and w:IsA"StringValue" then
+		local scr = script.ScriptRepo[w.Value]
 
 		scr = scr:Clone()
-		scr.Name = "RepoScript"
 		scr.Parent = w.Parent
 		task.defer(function()
 			require(scr)()
 		end)
 	elseif w.Name == "ClientObjectScript" then
-		task.delay(.05,function()
+		task.defer(function()
 			require(w)()
 		end)
-	elseif w:IsA("BasePart") then
-		if w:FindFirstChild('SetCollisionGroup') then
-			task.spawn(function()
-				phs:SetPartCollisionGroup(w,w.SetCollisionGroup.Value)
-			end)
-		end
+	elseif w:FindFirstChild('SetCollisionGroup') then
+		phs:SetPartCollisionGroup(w, w.SetCollisionGroup.Value)
 	end
 end
 
