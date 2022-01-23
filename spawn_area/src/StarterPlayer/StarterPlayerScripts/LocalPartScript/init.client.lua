@@ -28,9 +28,7 @@ local function ApplyPart(w)
 		task.defer(function()
 			require(scr)()
 		end)
-	end
-	
-	if w.Name == "ClientObjectScript" then
+	elseif w.Name == "ClientObjectScript" then
 		task.delay(.05,function()
 			require(w)()
 		end)
@@ -43,31 +41,15 @@ local function ApplyPart(w)
 	end
 end
 
-local function addChildren(p,np)
-	p.ChildAdded:Connect(function(v)
-		local c = v.Clone()
-		c.Parent = np
-		addChildren(v,c)
-		ApplyPart(p)
-	end)
-end
-
-local addPart = function(v)
-	if v.Name == "ClientObject" then
-		local c = v.Parent:Clone()
-		c.Parent = v.Parent.Parent
-		v.Parent:Destroy()
-		addChildren(v,c)
-		ApplyPart(c)
-		for _,w in ipairs(c:GetDescendants()) do
+for _,d in ipairs(workspace:GetDescendants()) do
+	if d.Name == "ClientObject" then
+		local parent = d.Parent
+		ApplyPart(parent)
+		for _,w in ipairs(parent:GetDescendants()) do
 			ApplyPart(w)
 		end
-		v:Destroy()
+		d:Destroy()
 	end
-end
-
-for _,d in ipairs(workspace:GetDescendants()) do
-	addPart(d)
 end
 
 local function initplr(p)
