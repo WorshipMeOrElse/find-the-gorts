@@ -43,18 +43,12 @@ end
 
 local function initplr(p)
 	local function initchar(c)
-		if not c then return end
-		for _,v in pairs(c:GetChildren()) do
-			if v:IsA("BasePart") then
-				phs:SetPartCollisionGroup(v,'OtherPlayers')
-			end
+		for _,v in ipairs(c:GetChildren()) do
+			if not v:IsA("BasePart") then continue end
+			phs:SetPartCollisionGroup(v,'OtherPlayers')
 		end
-		c.ChildAdded:connect(function(v)
-			if v:IsA("BasePart") then
-				phs:SetPartCollisionGroup(v,'OtherPlayers')
-			end
-		end)
 	end
+
 	p.CharacterAdded:Connect(initchar)
 	initchar(p.Character)
 end
@@ -68,19 +62,10 @@ end
 
 local p = players.LocalPlayer
 local function initchar(c)
-	if not c then return end
 	for _,v in pairs(c:GetChildren()) do
-		if v:IsA("BasePart") then
-			phs:SetPartCollisionGroup(v,'Player')
-		end
+		if not v:IsA("BasePart") then continue end
+		phs:SetPartCollisionGroup(v,'Player')
 	end
-
-	c.ChildAdded:connect(function(v)
-		if v:IsA("BasePart") then
-			phs:SetPartCollisionGroup(v,'Player')
-		end
-	end)
 end
 
 p.CharacterAdded:Connect(initchar)
-initchar(p.Character)
