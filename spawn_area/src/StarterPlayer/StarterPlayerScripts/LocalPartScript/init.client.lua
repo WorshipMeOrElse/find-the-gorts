@@ -3,9 +3,9 @@ local lighting = game:GetService('Lighting')
 local origlighting={}
 
 local function ApplyPart(w)
-	w.Transparency= ((w.Name=='LightingChanger') and w:IsA'BasePart') and 1 or 0
-	
-	if w.Name=='ChangeLighting' then
+	if w.Name=='LightingChanger' then
+		w.Transparency = 1
+	elseif w.Name=='ChangeLighting' then
 		for p,l in ipairs(require(w)) do
 			lighting[p]=l
 
@@ -49,7 +49,7 @@ local function initplr(p)
 	end
 
 	p.CharacterAdded:Connect(initchar)
-	initchar(p.Character)
+	initchar(p.Character or p.CharacterAdded:Wait())
 end
 
 local players = game:GetService('Players')
@@ -61,7 +61,7 @@ end
 
 local p = players.LocalPlayer
 local function initchar(c)
-	for _,v in pairs(c:GetChildren()) do
+	for _,v in ipairs(c:GetChildren()) do
 		if not v:IsA("BasePart") then continue end
 		phs:SetPartCollisionGroup(v,'Player')
 	end
