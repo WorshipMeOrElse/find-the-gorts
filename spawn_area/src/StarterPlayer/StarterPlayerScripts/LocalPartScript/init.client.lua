@@ -21,6 +21,7 @@ local function ApplyPart(w)
 		task.defer(function()
 			require(scr)()
 		end)
+		w:Destroy()
 	elseif w.Name == "ClientObjectScript" then
 		task.defer(function()
 			require(w)()
@@ -32,14 +33,14 @@ end
 
 for _,d in ipairs(workspace:GetDescendants()) do
 	if d.Name == "ClientObject" then
-		local clone = d.Parent:Clone()
-		clone.Parent = d.Parent.Parent
-		d.Parent:Destroy()
+		local clone = d.Parent
 		ApplyPart(clone)
+
 		for _,w in ipairs(clone:GetDescendants()) do
 			ApplyPart(w)
 		end
-		d:Destroy()
+
+		clone.ClientObject:Destroy()
 	end
 end
 

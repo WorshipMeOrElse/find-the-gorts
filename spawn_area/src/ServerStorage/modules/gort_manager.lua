@@ -15,7 +15,7 @@ function module:LoadGorts(player)
 	
 	if not retrieved then
 		player:Kick('Data hasn\'t loaded properly, please rejoin')
-		warn(player.Name..'failed')
+		warn(player.Name..' '..message)
 		return nil
 	end
 	
@@ -31,12 +31,23 @@ function module:Refresh(player)
 	refresh:FireClient(player, player_data[player.UserId])
 end
 
-function module:AddGort(player, gort)
+function module:AwardGort(player, gort)
 	if player_data[player.UserId][gort.Name] == true then return end
 	player_data[player.UserId][gort.Name] = true
 	new:FireClient(player, gort.Name, gort.Decal.Texture)
 	module:Refresh(player)
 end
+
+local award_gort_hidden = replicated_storage:WaitForChild('remotes'):WaitForChild('award_gort_hidden')
+local ancestry_connection
+ancestry_connection = award_gort_hidden.AncestryChanged:Connect(function(_, parent)
+	if parent == nil then return end
+
+	award_gort_hidden.OnServerEvent:Connect(function(player_who_called, gort)
+		module:AwardGort(player_who_called, gort)
+	end)
+	ancestry_connection:Disconnect()
+end)
 
 function module:HasGort(player, gort)
 	return player_data[player.UserId][gort.Name] == true

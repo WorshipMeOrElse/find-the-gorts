@@ -1,11 +1,6 @@
 local ts=game:GetService'TweenService'
 local function tween(part,time,inf)
-	local tweeninf=TweenInfo.new(
-		time,
-		Enum.EasingStyle.Linear,
-		Enum.EasingDirection.Out
-	)
-	local tw=ts:Create(part,tweeninf,inf)
+	local tw=ts:Create(part,TweenInfo.new(time),inf)
 	tw:Play()
 end
 
@@ -13,42 +8,45 @@ local sounds={
 	Inflate='rbxassetid://11895499',
 	Pop='rbxassetid://11895500'
 }
-local function Play(snd,par)
+
+local debris = game:GetService('Debris')
+local parent = script.Parent
+local function Play(snd)
 	local s=Instance.new('Sound')
-	s.SoundId=sounds[snd] or ''
-	s.Parent = par
+	s.SoundId=sounds[snd]
+	s.Parent = workspace
 	s:Play()
-	game.Debris:AddItem(s,10)
+
+	debris:AddItem(s, s.TimeLength)
 	return s
 end
 
 local userinput=game:GetService('UserInputService')
-local NOJUMPALLOWED=script.Parent:FindFirstChild'CannotDismount' and script.Parent.CannotDismount.Value
+local NOJUMPALLOWED= parent:FindFirstChild'CannotDismount' and parent.CannotDismount.Value
 
 local bdelay = false
 
 return function()
-	local WaitTime=script.Parent:FindFirstChild'WaitTime' and script.Parent.WaitTime.Value or 5
-	local MaxHeight=script.Parent:FindFirstChild'MaxHeight' and script.Parent.MaxHeight.Value or 20
-	local Force=script.Parent:FindFirstChild'Force' and script.Parent.Force.Value or 5
-
+	local WaitTime=parent:FindFirstChild'WaitTime' and parent.WaitTime.Value or 5
 	WaitTime = WaitTime <= 0 and math.huge or WaitTime
+	local MaxHeight=parent:FindFirstChild'MaxHeight' and parent.MaxHeight.Value or 20
+	local Force=parent:FindFirstChild'Force' and parent.Force.Value or 5
 
 	local Riding = false
 	local val
 
-	if script.Parent.Name=='ButtonActivatedBalloonDispenser' then
+	if parent.Name == 'ButtonActivatedBalloonDispenser' then
 		val=Instance.new('BoolValue')
 		val.Name='Activated'
-		val.Parent = script.Parent
+		val.Parent = parent
 	end
 
-	for _,d in ipairs(script.Parent:GetChildren()) do
+	for _,d in ipairs(parent:GetChildren()) do
 		if not d:IsA('Decal') then continue end
-		d.Color3=script.Parent.Color
+		d.Color3=parent.Color
 	end
 
-	script.Parent.Touched:Connect(function(part)
+	parent.Touched:Connect(function(part)
 		local plr = game.Players:GetPlayerFromCharacter(part.Parent)
 		if not (part.Parent:FindFirstChild("Humanoid") and not (val and not val.Value) and plr == game.Players.LocalPlayer and bdelay ~= true) then return end
 		if Riding then return end
@@ -62,28 +60,22 @@ return function()
 			end)
 		end
 
-		local Rope = Instance.new("RopeConstraint")
-		local Balloon = Instance.new("Part")
 		local Bar = Instance.new("Part")
-		local A2 = Instance.new("Attachment")
-		local P1 = Instance.new("Attachment")
-		local P2 = Instance.new("Attachment")
-		local Weld = Instance.new("WeldConstraint")
-
 		Bar.Size = Vector3.new(3,0.4,0.4)
 		Bar.Material = Enum.Material.SmoothPlastic
 		Bar.CanCollide = false
 		Bar.CFrame = part.Parent:FindFirstChild("HumanoidRootPart").CFrame * CFrame.new(0,2.6,0)
 		Bar.CustomPhysicalProperties = PhysicalProperties.new(10,0,0)
-		Bar.Color = script.Parent.Color
+		Bar.Color = parent.Color
 
+		local Balloon = Instance.new("Part")
 		Balloon.Shape='Ball'
 		Balloon.Material='Neon'
 		Balloon.Size = Vector3.new(2,2,2)
 		Balloon.CanCollide = true
-		Balloon.Color=script.Parent.Color
+		Balloon.Color=parent.Color
 		Balloon.CustomPhysicalProperties = PhysicalProperties.new(20,0,0) 
-		Balloon.CFrame = script.Parent.CFrame
+		Balloon.CFrame = parent.CFrame
 
 		local BG=Instance.new('BodyGyro')
 		BG.MaxTorque=Vector3.new(math.huge,math.huge,math.huge)
@@ -99,34 +91,41 @@ return function()
 		sm.MeshType='Sphere'
 		sm.Scale=Vector3.new()
 		sm.Parent = Balloon
-
+		
+		local A2 = Instance.new("Attachment")
 		A2.Parent = Balloon
+		local P1 = Instance.new("Attachment")
 		P1.Parent = Balloon
+		local P2 = Instance.new("Attachment")
 		P2.Parent = Bar
 
+		local Rope = Instance.new("RopeConstraint")
 		Rope.Length = 8
 		Rope.Visible = true
 		Rope.Color = BrickColor.new("Really black")
+
 		Rope.Attachment0 = P1
+
 		Rope.Attachment1 = P2
 		Rope.Parent = Balloon
 
-		Bar.Parent = script.Parent.Parent
+		Bar.Parent = parent.Parent
 
+		local Weld = Instance.new("WeldConstraint")
 		Weld.Part0 = part.Parent:FindFirstChild("HumanoidRootPart")
 		Weld.Part1 = Bar
 		Weld.Parent = Bar
 
-		Balloon.Parent = script.Parent.Parent
+		Balloon.Parent = parent.Parent
 
 		local ZPA = Instance.new("Animation")
 		ZPA.AnimationId = "rbxassetid://3268037702"
 		local ZPAT = part.Parent:FindFirstChild("Humanoid"):LoadAnimation(ZPA)
 		ZPAT:Play()
 
-		local pos=script.Parent.Position.Y
+		local pos=parent.Position.Y
 		local StartTime=os.clock
-		local sound=Play('Inflate',Balloon)
+		local sound=Play('Inflate')
 		tween(sm,2,{Scale=Vector3.new(1,1.25,1)})
 
 		repeat 
@@ -137,10 +136,9 @@ return function()
 			sound:Destroy() 
 		end
 
-		Play('Pop',Balloon)
+		Play('Pop')
 		BV:Destroy()
 		local cf=Balloon.CFrame
-		Balloon.Size=Vector3.new()
 		Balloon.CFrame=cf
 		Weld:Destroy()
 		Balloon.Transparency=1
@@ -163,6 +161,6 @@ return function()
 
 		ZPAT:Stop()
 		ZPAT:Destroy()
-		part.Parent:WaitForChild("Humanoid"):ChangeState'Jumping'
+		part.Parent.Humanoid:ChangeState('Jumping')
 	end)
 end
