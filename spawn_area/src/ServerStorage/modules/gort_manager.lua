@@ -38,17 +38,6 @@ function module:AwardGort(player, gort)
 	module:Refresh(player)
 end
 
-local award_gort_hidden = replicated_storage:WaitForChild('remotes'):WaitForChild('award_gort_hidden')
-local ancestry_connection
-ancestry_connection = award_gort_hidden.AncestryChanged:Connect(function(_, parent)
-	if parent == nil then return end
-
-	award_gort_hidden.OnServerEvent:Connect(function(player_who_called, gort)
-		module:AwardGort(player_who_called, gort)
-	end)
-	ancestry_connection:Disconnect()
-end)
-
 function module:HasGort(player, gort)
 	return player_data[player.UserId][gort.Name] == true
 end
