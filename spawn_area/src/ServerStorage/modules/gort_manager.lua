@@ -42,6 +42,12 @@ function module:HasGort(player, gort)
 	return player_data[player.UserId][gort.Name] == true
 end
 
+game:BindToClose(function()
+	for _, player in ipairs(players:GetPlayers()) do
+		module:SaveGorts(player)
+	end
+end)
+
 players.PlayerRemoving:Connect(function(player)
 	module:SaveGorts(player)
 	player_data[player.UserId] = nil

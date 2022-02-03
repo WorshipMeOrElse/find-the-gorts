@@ -18,4 +18,4 @@ local check = function()
 end
 
 input.FocusLost:ConnectParallel(check)
-input.enter.Activated:Connect(check)
+input.TextBoxFocusReleased:Connect(check)
