@@ -14,7 +14,7 @@ for _,v in ipairs(workspace.gorts:GetChildren()) do
 	v.Touched:Connect(function(hit)
 		local player = players:GetPlayerFromCharacter(hit.Parent)
 		if not player then return end
-		gort_manager:AddGort(player, v)
+		gort_manager:AwardGort(player, v)
 	end)
 end
 
