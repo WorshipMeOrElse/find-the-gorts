@@ -15,7 +15,7 @@ return function()
 			db = true
 			door.Color = Color3.fromRGB(188, 155, 93)
 			local inittime = os.clock()
-			repeat tl.Text =  gettime(inittime,10) wait()
+			repeat tl.Text =  gettime(inittime,5) wait()
 			until (os.clock() - inittime) >= 600
 			door.Transparency = 1
 			door.CanCollide = false
